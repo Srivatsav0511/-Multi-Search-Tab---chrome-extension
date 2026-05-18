@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Multi Search Launcher</title>
+    <link rel="stylesheet" href="newtab.css" />
+  </head>
+  <body>
+    <div class="bg-orb orb-1" aria-hidden="true"></div>
+    <div class="bg-orb orb-2" aria-hidden="true"></div>
+    <button id="wallpaper-pencil" class="wallpaper-pencil" type="button" aria-label="Customize">✎</button>
+    <div id="customize-panel" class="customize-panel hidden">
+      <div class="customize-title">Customize</div>
+      <div class="theme-switcher" role="group" aria-label="Theme">
+        <button id="theme-light" class="theme-btn" type="button">Light</button>
+        <button id="theme-dark" class="theme-btn active" type="button">Dark</button>
+      </div>
+      <button id="upload-wallpaper" class="panel-action" type="button">Change Wallpaper</button>
+      <button id="remove-wallpaper" class="panel-action" type="button">Remove Wallpaper</button>
+    </div>
+    <input id="wallpaper-input" type="file" accept="image/*" class="sr-only" />
+    <main class="container">
+      <h1 class="brand" id="greeting">Happy Day!</h1>
+      <form id="search-form" class="search-form">
+        <label for="query" class="sr-only">Ask something</label>
+        <div class="search-shell">
+          <span class="search-icon" aria-hidden="true">G</span>
+          <input
+            id="query"
+            name="query"
+            type="text"
+            placeholder="Search Google or type a URL"
+            autocomplete="off"
+            required
+          />
+        </div>
+      </form>
+
+      <section aria-label="AI apps" class="apps-section">
+        <div id="apps-grid" class="apps-grid"></div>
+      </section>
+
+      <section class="manage-section" aria-label="Manage apps">
+        <button id="toggle-manage" class="manage-toggle" type="button">Manage Apps</button>
+        <div id="manage-panel" class="manage-panel hidden">
+          <form id="add-app-form" class="add-app-form">
+            <input id="app-name" type="text" placeholder="App name (e.g. Grok)" required />
+            <input id="app-url" type="url" placeholder="App URL (e.g. https://grok.com)" required />
+            <button type="submit">Add App</button>
+          </form>
+          <p class="manage-hint">Paste the app website URL. Example: <code>https://grok.com</code></p>
+          <div id="custom-apps-list" class="custom-apps-list"></div>
+        </div>
+      </section>
+
+      <p id="status" class="status" aria-live="polite"></p>
+    </main>
+
+    <script src="newtab.js"></script>
+  </body>
+</html>
