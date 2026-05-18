@@ -2,6 +2,14 @@
 
 A Chrome New Tab extension for fast searching across your favorite engines and AI apps from one page.
 
+<p align="center">
+  <img src="docs/images/multisearchtab-icon.png" alt="Multi Search Tab Icon" width="160" />
+</p>
+
+## Preview
+
+![Multi Search Tab Preview](docs/images/multisearchtab-preview.png)
+
 ## Quick Install
 
 ### Option 1: Clone repo
@@ -70,7 +78,7 @@ This extension keeps everything in one place so search is faster and cleaner.
 - Drag app tiles to reorder (Manage mode)
 
 4. Customize panel (pencil icon at bottom-right)
-- Light / Dark theme
+- Color themes (10 preset colors)
 - Change wallpaper
 - Remove wallpaper
 
@@ -129,5 +137,3 @@ Try upload again and reload extension
 ## License
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE).
-# -Multi-Search-Tab---chrome-extension
-# -Multi-Search-Tab---chrome-extension

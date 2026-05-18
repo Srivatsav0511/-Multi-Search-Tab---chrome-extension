@@ -12,16 +12,25 @@
     <button id="wallpaper-pencil" class="wallpaper-pencil" type="button" aria-label="Customize">✎</button>
     <div id="customize-panel" class="customize-panel hidden">
       <div class="customize-title">Customize</div>
-      <div class="theme-switcher" role="group" aria-label="Theme">
-        <button id="theme-light" class="theme-btn" type="button">Light</button>
-        <button id="theme-dark" class="theme-btn active" type="button">Dark</button>
+      <div class="customize-title">Color</div>
+      <div class="color-switcher" role="group" aria-label="Color theme">
+        <button class="color-btn" data-color="black" type="button" aria-label="Black"></button>
+        <button class="color-btn" data-color="white" type="button" aria-label="White"></button>
+        <button class="color-btn active" data-color="blue" type="button" aria-label="Blue"></button>
+        <button class="color-btn" data-color="green" type="button" aria-label="Green"></button>
+        <button class="color-btn" data-color="orange" type="button" aria-label="Orange"></button>
+        <button class="color-btn" data-color="rose" type="button" aria-label="Rose"></button>
+        <button class="color-btn" data-color="purple" type="button" aria-label="Purple"></button>
+        <button class="color-btn" data-color="teal" type="button" aria-label="Teal"></button>
+        <button class="color-btn" data-color="amber" type="button" aria-label="Amber"></button>
+        <button class="color-btn" data-color="indigo" type="button" aria-label="Indigo"></button>
       </div>
-      <button id="upload-wallpaper" class="panel-action" type="button">Change Wallpaper</button>
+      <button id="upload-wallpaper" class="panel-action" type="button">Add Wallpaper</button>
       <button id="remove-wallpaper" class="panel-action" type="button">Remove Wallpaper</button>
     </div>
     <input id="wallpaper-input" type="file" accept="image/*" class="sr-only" />
     <main class="container">
-      <h1 class="brand" id="greeting">Happy Day!</h1>
+      <h1 class="brand" id="greeting"></h1>
       <form id="search-form" class="search-form">
         <label for="query" class="sr-only">Ask something</label>
         <div class="search-shell">
@@ -45,7 +54,7 @@
         <button id="toggle-manage" class="manage-toggle" type="button">Manage Apps</button>
         <div id="manage-panel" class="manage-panel hidden">
           <form id="add-app-form" class="add-app-form">
-            <input id="app-name" type="text" placeholder="App name (e.g. Grok)" required />
+            <input id="app-name" type="text" placeholder="App name (optional)" />
             <input id="app-url" type="url" placeholder="App URL (e.g. https://grok.com)" required />
             <button type="submit">Add App</button>
           </form>

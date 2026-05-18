@@ -9,11 +9,13 @@ const DEFAULT_APPS = [
   { id: "grok", name: "Grok", domain: "grok.com", searchUrlTemplate: "https://grok.com/?q={query}", builtIn: true }
 ];
 const CUSTOM_APPS_KEY = "customApps";
-const THEME_KEY = "themeMode";
+const COLOR_KEY = "themeColor";
 const APP_PREFS_KEY = "appPrefs";
 const WALLPAPER_KEY = "customWallpaper";
 const USER_NAME = "Srivatsav";
-const DEFAULT_WALLPAPER_URL = "assets/default-wallpaper.png";
+
+const alreadyInitialized = !!window.__multiSearchTabInit;
+window.__multiSearchTabInit = true;
 
 const form = document.getElementById("search-form");
 const queryInput = document.getElementById("query");
@@ -26,13 +28,12 @@ const addAppForm = document.getElementById("add-app-form");
 const appNameInput = document.getElementById("app-name");
 const appUrlInput = document.getElementById("app-url");
 const customAppsList = document.getElementById("custom-apps-list");
-const lightThemeBtn = document.getElementById("theme-light");
-const darkThemeBtn = document.getElementById("theme-dark");
 const wallpaperPencilBtn = document.getElementById("wallpaper-pencil");
 const customizePanel = document.getElementById("customize-panel");
 const uploadWallpaperBtn = document.getElementById("upload-wallpaper");
 const removeWallpaperBtn = document.getElementById("remove-wallpaper");
 const wallpaperInput = document.getElementById("wallpaper-input");
+const colorButtons = Array.from(document.querySelectorAll(".color-btn"));
 
 let customApps = [];
 let appOrder = [];
@@ -40,50 +41,234 @@ let hiddenAppIds = new Set();
 let draggingAppId = null;
 let isManageMode = false;
 
-function setTheme(mode) {
-  const theme = mode === "light" ? "light" : "dark";
-  document.documentElement.setAttribute("data-theme", theme);
-  lightThemeBtn.classList.toggle("active", theme === "light");
-  darkThemeBtn.classList.toggle("active", theme === "dark");
+function setColorTheme(color) {
+  const palettes = {
+    black: {
+      bg: "#0f0f10",
+      panel: "#1a1b1d",
+      panelHover: "#242629",
+      panelBorder: "#34373c",
+      textPrimary: "#eceff3",
+      textMuted: "#a6adb8",
+      accent: "#111111",
+      focus: "rgba(150, 150, 150, 0.32)"
+    },
+    white: {
+      bg: "#ffffff",
+      panel: "#ffffff",
+      panelHover: "#f3f4f6",
+      panelBorder: "#d7dbe1",
+      textPrimary: "#202124",
+      textMuted: "#5f6368",
+      accent: "#ffffff",
+      focus: "rgba(66, 133, 244, 0.28)"
+    },
+    blue: {
+      bg: "#eef4ff",
+      panel: "#f9fbff",
+      panelHover: "#edf3ff",
+      panelBorder: "#cfdcf8",
+      textPrimary: "#1f2a44",
+      textMuted: "#5c6f96",
+      accent: "#4285f4",
+      focus: "rgba(66, 133, 244, 0.28)"
+    },
+    green: {
+      bg: "#edf8f1",
+      panel: "#f7fdf9",
+      panelHover: "#ebf8ef",
+      panelBorder: "#c9e8d2",
+      textPrimary: "#1f3a2a",
+      textMuted: "#567962",
+      accent: "#34a853",
+      focus: "rgba(52, 168, 83, 0.28)"
+    },
+    orange: {
+      bg: "#fff6ea",
+      panel: "#fffcf7",
+      panelHover: "#fff3e1",
+      panelBorder: "#f6dcc0",
+      textPrimary: "#3f2b15",
+      textMuted: "#8a6845",
+      accent: "#fb8c00",
+      focus: "rgba(251, 140, 0, 0.3)"
+    },
+    rose: {
+      bg: "#fff1f6",
+      panel: "#fff8fb",
+      panelHover: "#ffeef5",
+      panelBorder: "#f8d1df",
+      textPrimary: "#4a1f33",
+      textMuted: "#8f6076",
+      accent: "#e91e63",
+      focus: "rgba(233, 30, 99, 0.28)"
+    },
+    purple: {
+      bg: "#f4f0ff",
+      panel: "#faf8ff",
+      panelHover: "#f0ebff",
+      panelBorder: "#dccff7",
+      textPrimary: "#2f2446",
+      textMuted: "#6f6294",
+      accent: "#7e57c2",
+      focus: "rgba(126, 87, 194, 0.28)"
+    },
+    teal: {
+      bg: "#e9f7f5",
+      panel: "#f5fcfb",
+      panelHover: "#e7f6f3",
+      panelBorder: "#c7e8e2",
+      textPrimary: "#1b3a36",
+      textMuted: "#4d7973",
+      accent: "#00897b",
+      focus: "rgba(0, 137, 123, 0.28)"
+    },
+    amber: {
+      bg: "#fff9e8",
+      panel: "#fffdf6",
+      panelHover: "#fff6dc",
+      panelBorder: "#f4e2b1",
+      textPrimary: "#3a2f16",
+      textMuted: "#84704a",
+      accent: "#ffb300",
+      focus: "rgba(255, 179, 0, 0.3)"
+    },
+    indigo: {
+      bg: "#eef0ff",
+      panel: "#f8f9ff",
+      panelHover: "#ebedff",
+      panelBorder: "#cfd3f8",
+      textPrimary: "#242b4a",
+      textMuted: "#636d96",
+      accent: "#3949ab",
+      focus: "rgba(57, 73, 171, 0.28)"
+    }
+  };
+
+  const chosen = palettes[color] ? color : "blue";
+  const palette = palettes[chosen];
+  document.documentElement.setAttribute("data-color", chosen);
+  document.documentElement.style.setProperty("--bg", palette.bg);
+  document.documentElement.style.setProperty("--panel", palette.panel);
+  document.documentElement.style.setProperty("--panel-hover", palette.panelHover);
+  document.documentElement.style.setProperty("--panel-border", palette.panelBorder);
+  document.documentElement.style.setProperty("--text-primary", palette.textPrimary);
+  document.documentElement.style.setProperty("--text-muted", palette.textMuted);
+  document.documentElement.style.setProperty("--accent", palette.accent);
+  document.documentElement.style.setProperty("--focus", palette.focus);
+  colorButtons.forEach((btn) => btn.classList.toggle("active", btn.dataset.color === chosen));
 }
 
-function saveTheme(mode) {
-  chrome.storage.sync.set({ [THEME_KEY]: mode });
+function saveColorTheme(color) {
+  chrome.storage.sync.set({ [COLOR_KEY]: color });
+  try {
+    localStorage.setItem(COLOR_KEY, color);
+  } catch (_) {
+    // Ignore localStorage failures; sync storage remains source of truth.
+  }
 }
 
-function loadTheme() {
-  chrome.storage.sync.get([THEME_KEY], (result) => {
-    const savedTheme = result[THEME_KEY];
-    setTheme(savedTheme === "light" ? "light" : "dark");
+function loadColorTheme() {
+  let localColor = null;
+  try {
+    localColor = localStorage.getItem(COLOR_KEY);
+  } catch (_) {
+    localColor = null;
+  }
+  if (localColor) {
+    setColorTheme(localColor);
+  }
+  chrome.storage.sync.get([COLOR_KEY], (result) => {
+    const color = result[COLOR_KEY] || localColor || "blue";
+    setColorTheme(color);
+    try {
+      localStorage.setItem(COLOR_KEY, color);
+    } catch (_) {
+      // Ignore localStorage failures.
+    }
   });
 }
 
 function applyWallpaper(dataUrl) {
+  const hasWallpaper = !!dataUrl;
+  removeWallpaperBtn.classList.toggle("hidden", !hasWallpaper);
+  uploadWallpaperBtn.textContent = hasWallpaper ? "Change Wallpaper" : "Add Wallpaper";
+  document.body.classList.toggle("wallpaper-mode", hasWallpaper);
+
   if (!dataUrl) {
-    document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.12), rgba(0,0,0,0.12)), url("${DEFAULT_WALLPAPER_URL}")`;
+    document.body.style.backgroundImage = "";
     document.body.style.backgroundColor = "";
     return;
   }
 
-  document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.12), rgba(0,0,0,0.12)), url("${dataUrl}")`;
+  document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.28), rgba(0,0,0,0.28)), url("${dataUrl}")`;
 }
 
 function loadWallpaper() {
   chrome.storage.local.get([WALLPAPER_KEY], (result) => {
-    applyWallpaper(result[WALLPAPER_KEY] || "");
+    const saved = typeof result[WALLPAPER_KEY] === "string" ? result[WALLPAPER_KEY] : "";
+    applyWallpaper(saved);
   });
 }
 
 function saveWallpaper(dataUrl) {
+  applyWallpaper(dataUrl);
+
   chrome.storage.local.set({ [WALLPAPER_KEY]: dataUrl }, () => {
-    applyWallpaper(dataUrl);
+    if (chrome.runtime.lastError) {
+      setStatus("Could not save wallpaper. Try a smaller image.", true);
+    }
   });
 }
 
 function clearWallpaper() {
-  chrome.storage.local.remove([WALLPAPER_KEY], () => {
-    applyWallpaper("");
+  applyWallpaper("");
+
+  chrome.storage.local.set({ [WALLPAPER_KEY]: "" }, () => {
+    if (chrome.runtime.lastError) {
+      setStatus("Could not update wallpaper state.", true);
+    }
   });
+}
+
+function optimizeWallpaperDataUrl(file, onDone) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    if (typeof reader.result !== "string") {
+      onDone("");
+      return;
+    }
+
+    const img = new Image();
+    img.onload = () => {
+      const maxWidth = 1920;
+      const maxHeight = 1080;
+      let { width, height } = img;
+
+      const scale = Math.min(maxWidth / width, maxHeight / height, 1);
+      width = Math.max(1, Math.round(width * scale));
+      height = Math.max(1, Math.round(height * scale));
+
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        onDone(reader.result);
+        return;
+      }
+
+      ctx.drawImage(img, 0, 0, width, height);
+
+      // JPEG drastically reduces storage size for wallpapers.
+      const optimized = canvas.toDataURL("image/jpeg", 0.82);
+      onDone(optimized || reader.result);
+    };
+    img.onerror = () => onDone(reader.result);
+    img.src = reader.result;
+  };
+  reader.onerror = () => onDone("");
+  reader.readAsDataURL(file);
 }
 
 function buildSearchUrl(app, query) {
@@ -221,16 +406,33 @@ function renderApps() {
 }
 
 function updateGreeting() {
-  const hour = new Date().getHours();
-  if (hour < 12) {
-    greetingEl.textContent = `Good morning, ${USER_NAME}`;
-    return;
-  }
-  if (hour < 17) {
-    greetingEl.textContent = `Good afternoon, ${USER_NAME}`;
-    return;
-  }
-  greetingEl.textContent = `Good evening, ${USER_NAME}`;
+  const now = new Date();
+  const hour = now.getHours();
+  const dayNames = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday"
+  ];
+  const dayName = dayNames[now.getDay()];
+
+  let timeGreeting = "Good evening";
+  if (hour < 12) timeGreeting = "Good morning";
+  else if (hour < 17) timeGreeting = "Good afternoon";
+
+  const lines = [
+    `Happy ${dayName}, ${USER_NAME}`,
+    `${timeGreeting}, ${USER_NAME}`,
+    `${timeGreeting}, ${USER_NAME}. Let’s build something legendary.`,
+    `Mission ready, ${USER_NAME}. Pick your engine.`
+  ];
+
+  // Rotate once per hour so greeting feels dynamic but stable.
+  const index = (now.getDay() + hour) % lines.length;
+  greetingEl.textContent = lines[index];
 }
 
 function renderCustomAppsList() {
@@ -371,6 +573,55 @@ function normalizeDomain(urlString) {
   }
 }
 
+function deriveAppNameFromUrl(urlString) {
+  try {
+    const host = new URL(urlString).hostname.toLowerCase();
+    const withoutWww = host.replace(/^www\./, "");
+    const base = withoutWww.split(".")[0] || withoutWww;
+    if (!base) return "Custom App";
+
+    // Convert separators to spaces and title-case.
+    const cleaned = base.replace(/[-_]+/g, " ").trim();
+    if (!cleaned) return "Custom App";
+
+    return cleaned
+      .split(" ")
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(" ");
+  } catch (_) {
+    return "Custom App";
+  }
+}
+
+async function detectWebsiteTitle(urlString) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 5000);
+  try {
+    const response = await fetch(urlString, {
+      method: "GET",
+      signal: controller.signal
+    });
+    if (!response.ok) return "";
+
+    const html = await response.text();
+    const match = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+    if (!match || !match[1]) return "";
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(`<title>${match[1]}</title>`, "text/html");
+    const title = (doc.querySelector("title")?.textContent || "").trim();
+    if (!title) return "";
+
+    // Remove common separator tails: "Home - X", "X | Official".
+    const simplified = title.split(" | ")[0].split(" - ")[0].trim();
+    return simplified || title;
+  } catch (_) {
+    return "";
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 function loadCustomApps() {
   chrome.storage.sync.get([CUSTOM_APPS_KEY, APP_PREFS_KEY], (result) => {
     const stored = result[CUSTOM_APPS_KEY];
@@ -392,12 +643,12 @@ function loadCustomApps() {
   });
 }
 
-function addCustomApp(name, searchUrlTemplate) {
+async function addCustomApp(name, searchUrlTemplate) {
   const trimmedName = name.trim();
   const trimmedTemplate = searchUrlTemplate.trim();
 
-  if (!trimmedName || !trimmedTemplate) {
-    setStatus("App name and URL are required.", true);
+  if (!trimmedTemplate) {
+    setStatus("App URL is required.", true);
     return;
   }
   if (!/^https?:\/\//i.test(trimmedTemplate)) {
@@ -405,9 +656,15 @@ function addCustomApp(name, searchUrlTemplate) {
     return;
   }
 
+  let finalName = trimmedName;
+  if (!finalName) {
+    const detected = await detectWebsiteTitle(trimmedTemplate);
+    finalName = detected || deriveAppNameFromUrl(trimmedTemplate);
+  }
+
   const customApp = {
     id: `custom-${Date.now()}`,
-    name: trimmedName,
+    name: finalName,
     domain: normalizeDomain(trimmedTemplate),
     searchUrlTemplate: trimmedTemplate,
     builtIn: false
@@ -422,76 +679,77 @@ function addCustomApp(name, searchUrlTemplate) {
   setStatus("");
 }
 
-form.addEventListener("submit", (event) => {
-  event.preventDefault();
-  openDefaultSearch(queryInput.value);
-});
+if (!alreadyInitialized) {
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    openDefaultSearch(queryInput.value);
+  });
 
-toggleManageBtn.addEventListener("click", () => {
-  managePanel.classList.toggle("hidden");
-  isManageMode = !managePanel.classList.contains("hidden");
-  renderApps();
-});
-
-document.addEventListener("click", (event) => {
-  const clickedInsideManage = managePanel.contains(event.target);
-  const clickedToggle = toggleManageBtn.contains(event.target);
-  const clickedCustomizePanel = customizePanel.contains(event.target);
-  const clickedCustomizeToggle = wallpaperPencilBtn.contains(event.target);
-  if (isManageMode && !clickedInsideManage && !clickedToggle) {
-    managePanel.classList.add("hidden");
-    isManageMode = false;
+  toggleManageBtn.addEventListener("click", () => {
+    managePanel.classList.toggle("hidden");
+    isManageMode = !managePanel.classList.contains("hidden");
     renderApps();
-  }
-  if (!clickedCustomizePanel && !clickedCustomizeToggle) {
-    customizePanel.classList.add("hidden");
-  }
-});
+  });
 
-wallpaperPencilBtn.addEventListener("click", () => {
-  customizePanel.classList.toggle("hidden");
-});
-
-uploadWallpaperBtn.addEventListener("click", () => {
-  wallpaperInput.click();
-  customizePanel.classList.add("hidden");
-});
-
-removeWallpaperBtn.addEventListener("click", () => {
-  clearWallpaper();
-  customizePanel.classList.add("hidden");
-});
-
-wallpaperInput.addEventListener("change", () => {
-  const file = wallpaperInput.files && wallpaperInput.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = () => {
-    if (typeof reader.result === "string") {
-      saveWallpaper(reader.result);
+  document.addEventListener("click", (event) => {
+    const clickedInsideManage = managePanel.contains(event.target);
+    const clickedToggle = toggleManageBtn.contains(event.target);
+    const clickedCustomizePanel = customizePanel.contains(event.target);
+    const clickedCustomizeToggle = wallpaperPencilBtn.contains(event.target);
+    if (isManageMode && !clickedInsideManage && !clickedToggle) {
+      managePanel.classList.add("hidden");
+      isManageMode = false;
+      renderApps();
     }
-  };
-  reader.readAsDataURL(file);
-  wallpaperInput.value = "";
-});
+    if (!clickedCustomizePanel && !clickedCustomizeToggle) {
+      customizePanel.classList.add("hidden");
+    }
+  });
 
-addAppForm.addEventListener("submit", (event) => {
-  event.preventDefault();
-  addCustomApp(appNameInput.value, appUrlInput.value);
-});
+  wallpaperPencilBtn.addEventListener("click", () => {
+    customizePanel.classList.toggle("hidden");
+  });
 
-lightThemeBtn.addEventListener("click", () => {
-  setTheme("light");
-  saveTheme("light");
-});
+  uploadWallpaperBtn.addEventListener("click", () => {
+    wallpaperInput.click();
+    customizePanel.classList.add("hidden");
+  });
 
-darkThemeBtn.addEventListener("click", () => {
-  setTheme("dark");
-  saveTheme("dark");
-});
+  removeWallpaperBtn.addEventListener("click", () => {
+    clearWallpaper();
+    customizePanel.classList.add("hidden");
+  });
+
+  wallpaperInput.addEventListener("change", () => {
+    const file = wallpaperInput.files && wallpaperInput.files[0];
+    if (!file) return;
+    optimizeWallpaperDataUrl(file, (dataUrl) => {
+      if (!dataUrl) {
+        setStatus("Could not process wallpaper image.", true);
+        return;
+      }
+      saveWallpaper(dataUrl);
+    });
+    wallpaperInput.value = "";
+  });
+
+  addAppForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    addCustomApp(appNameInput.value, appUrlInput.value);
+  });
+
+  colorButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const color = btn.dataset.color || "blue";
+      setColorTheme(color);
+      saveColorTheme(color);
+    });
+  });
+
+}
 
 updateGreeting();
-loadTheme();
+loadColorTheme();
 loadWallpaper();
 loadCustomApps();
 setStatus("");
