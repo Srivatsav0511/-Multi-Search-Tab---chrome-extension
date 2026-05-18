@@ -3,12 +3,12 @@
 Search across your favourite websites directly from a custom new tab page.
 
 <p align="center">
-  <img src="docs/images/multisearchtab-icon.png" alt="Multi Search Tab Icon" width="160" />
+  <img src="assets/multisearchtab-icon.png" alt="Multi Search Tab Icon" width="160" />
 </p>
 
 ## Preview
 
-![Multi Search Tab Preview](docs/images/multisearchtab-preview.png)
+![Multi Search Tab Preview](assets/multisearchtab-preview.png)
 
 ## Quick Install
 
@@ -39,7 +39,7 @@ This extension replaces the default Chrome New Tab with a personal quick-launch 
 
 You can:
 - type once and search quickly
-- open your preferred AI/search app directly
+- open your preferred search app directly
 - customize theme and wallpaper
 - manage app tiles (add, remove, reorder)
 
