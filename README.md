@@ -1,6 +1,6 @@
-# Personal AI Quick Search New Tab
+# Multi Search Tab
 
-A Chrome New Tab extension for fast searching across your favorite engines and AI apps from one page.
+Search across your favourite websites directly from a custom new tab page.
 
 <p align="center">
   <img src="docs/images/multisearchtab-icon.png" alt="Multi Search Tab Icon" width="160" />
